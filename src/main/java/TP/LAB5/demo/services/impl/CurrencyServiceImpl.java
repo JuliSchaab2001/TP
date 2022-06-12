@@ -29,8 +29,8 @@ public class CurrencyServiceImpl implements CurrencyService {
         //Lleno el dto con el object maper, respeto los nombre del json en el dto, despues lo paso a mi objeto
         HttpResponse<CurrencyApiDto> response = HttpClient.newHttpClient().send(request, new JsonBodyHandler<>(CurrencyApiDto.class));
         return Currency.builder()
-                .date(response.body().getFecha().substring(0,9))
-                .time(response.body().getFecha().substring(10))
+                .date(response.body().getFecha().substring(0,10))
+                .time(response.body().getFecha().substring(11))
                 .buyPrice(Double.valueOf(response.body().getCompra()))
                 .salePrice(Double.valueOf(response.body().getVenta()))
                 .build();
