@@ -1,14 +1,15 @@
 package TP.LAB5.demo.services;
 
+import TP.LAB5.demo.domain.Currency;
 import TP.LAB5.demo.domain.Instrument;
 import TP.LAB5.demo.repository.InstrumentRepository;
-import TP.LAB5.demo.utils.EntityURLBuilder;
 import TP.LAB5.demo.utils.PostResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.io.IOException;
 import java.util.List;
 
 import static TP.LAB5.demo.utils.EntityURLBuilder.buildURL;
@@ -21,6 +22,10 @@ public class InstrumentService {
     @Autowired
     private InstrumentRepository instrumentRepository;
 
+    //Esta bien llamar servicios dentro de servicios?
+    //Hace falta que le ponga el autowired a esta mierda?
+    @Autowired
+    private CurrencyService currencyService;
 
     public PostResponse addInstrument(Instrument instrument) {
 
@@ -34,12 +39,35 @@ public class InstrumentService {
     }
 
     public List<Instrument> getAll() {
-        return instrumentRepository.findAll();
+        try {
+            Currency currency = currencyService.getCurrency();
+        List<Instrument> instrumentList =  instrumentRepository.findAll();
+        for(Instrument instrument: instrumentList){
+            instrument.setPesosPrice(instrument.getDolarPrice() * currency.getSalePrice());
+        }
+        return instrumentList;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Instrument getInstrumentById(final Integer id)
     {
-        return instrumentRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Instrument not exist"));
+    try{
+        Currency currency = currencyService.getCurrency();
+        Instrument instrument =  instrumentRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Instrument not exist"));
+
+        instrument.setPesosPrice(instrument.getDolarPrice() * currency.getSalePrice());
+
+        return instrument;
+
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+    }
     }
 
 

@@ -21,7 +21,8 @@ public class Instrument {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Boolean isNew;
-    private Double price;
+    private Double dolarPrice;
+    private Double pesosPrice;
     private String brand;
 
 
