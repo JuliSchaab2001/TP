@@ -1,5 +1,6 @@
 package TP.LAB5.demo.controller;
 
+import TP.LAB5.demo.DTO.DTOEmployeeNoShop;
 import TP.LAB5.demo.domain.Employee;
 import TP.LAB5.demo.domain.Shop;
 import TP.LAB5.demo.services.EmployeeService;
@@ -30,6 +31,11 @@ public class EmployeeController {
     @GetMapping("/{EmployeeId}")
     public Employee getById(@PathVariable Integer EmployeeId){
         return employeeService.getById(EmployeeId);
+    }
+
+    @GetMapping("/a")
+    public List<DTOEmployeeNoShop> getAllByShopId(@RequestParam Integer shopId){
+        return employeeService.getAllByShopId(shopId);
     }
 
 }

@@ -14,6 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static TP.LAB5.demo.utils.EntityURLBuilder.buildURL;
 
@@ -33,7 +34,7 @@ public class InstrumentService {
     public PostResponse addInstrument(Instrument instrument) {
 
         //Creo el instrumento y lo guardo en una variable
-        Instrument I = instrumentRepository.save(instrument);
+        Instrument I = Optional.ofNullable(instrumentRepository.save(instrument)).orElseThrow(() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "TU MAMA"));
 
         //Retorno un PostResponse y utilizo el instrumento guardado Para crear la url y pasarsela al postResponse
         return PostResponse.builder()
@@ -80,6 +81,7 @@ public class InstrumentService {
             dtoInstrumentNoShops.add(DTOInstrumentNoShop
                     .builder()
                     .id(instrument.getId())
+                    .isNew(instrument.getIsNew())
                     .brand(instrument.getBrand())
                     .dolarPrice(instrument.getDolarPrice())
                     .pesosPrice(instrument.getDolarPrice() *currency.getSalePrice())

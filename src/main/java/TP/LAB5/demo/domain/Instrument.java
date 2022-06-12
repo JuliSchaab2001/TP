@@ -1,6 +1,8 @@
 package TP.LAB5.demo.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,11 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Data
 @Entity
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type") //Propiedad que despues va al json para indicar el tipo
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Guitar.class, name = "guitar"),
+       @JsonSubTypes.Type(value = Drum.class, name = "drum")
+})
 public class Instrument {
 
     @Id

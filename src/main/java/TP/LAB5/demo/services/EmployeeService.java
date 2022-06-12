@@ -1,6 +1,7 @@
 package TP.LAB5.demo.services;
 
 
+import TP.LAB5.demo.DTO.DTOEmployeeNoShop;
 import TP.LAB5.demo.domain.Employee;
 import TP.LAB5.demo.domain.Shop;
 import TP.LAB5.demo.repository.EmployeeRepository;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static TP.LAB5.demo.utils.EntityURLBuilder.buildURL;
@@ -38,5 +40,22 @@ public class EmployeeService {
 
     public Employee getById(Integer EmployeeId) {
         return employeeRepository.findById(EmployeeId).orElseThrow(() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "this Employee not exist"));
+    }
+
+    public List<DTOEmployeeNoShop> getAllByShopId(Integer shopId) {
+         List<DTOEmployeeNoShop> dtoEmployeeNoShopList = new ArrayList<DTOEmployeeNoShop>();
+         List<Employee> employeeList = employeeRepository.findByShopId(shopId);
+
+         for(Employee employee: employeeList){
+             dtoEmployeeNoShopList.add(DTOEmployeeNoShop
+                     .builder()
+                     .id(employee.getId())
+                     .age(employee.getAge())
+                     .name(employee.getName())
+                     .lastName(employee.getLastName())
+                     .build());
+         }
+
+         return dtoEmployeeNoShopList;
     }
 }
