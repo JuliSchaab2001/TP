@@ -1,15 +1,18 @@
 package TP.LAB5.demo.services;
 
+import TP.LAB5.demo.DTO.DTOInstrumentNoShop;
 import TP.LAB5.demo.domain.Currency;
 import TP.LAB5.demo.domain.Instrument;
 import TP.LAB5.demo.repository.InstrumentRepository;
 import TP.LAB5.demo.utils.PostResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static TP.LAB5.demo.utils.EntityURLBuilder.buildURL;
@@ -38,7 +41,7 @@ public class InstrumentService {
                 .link(buildURL(path,I.getId().toString())).build();
     }
 
-    public List<Instrument> getAll() {
+    public List<Instrument> getAll(){
         try {
             Currency currency = currencyService.getCurrency();
         List<Instrument> instrumentList =  instrumentRepository.findAll();
@@ -46,9 +49,7 @@ public class InstrumentService {
             instrument.setPesosPrice(instrument.getDolarPrice() * currency.getSalePrice());
         }
         return instrumentList;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -63,17 +64,44 @@ public class InstrumentService {
 
         return instrument;
 
-    } catch (IOException e) {
-        throw new RuntimeException(e);
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException e) {
         throw new RuntimeException(e);
     }
     }
 
+    public ResponseEntity<List<DTOInstrumentNoShop>> getInstrumentByShopId(Integer shopId) {
+        try {
+        List<DTOInstrumentNoShop> dtoInstrumentNoShops = new ArrayList<DTOInstrumentNoShop>();
+        List<Instrument> instrumentList = instrumentRepository.findAllByShopId(shopId);
+            Currency currency = currencyService.getCurrency();
+        //paso la lista a una lista de dto para no devolver los shops, tambien asigno pesosPrice
 
+        for (Instrument instrument: instrumentList){
+            dtoInstrumentNoShops.add(DTOInstrumentNoShop
+                    .builder()
+                    .id(instrument.getId())
+                    .brand(instrument.getBrand())
+                    .dolarPrice(instrument.getDolarPrice())
+                    .pesosPrice(instrument.getDolarPrice() *currency.getSalePrice())
+                    .build());
+        }
 
-
-
-
-
+        return ResponseEntity.status(HttpStatus.OK).header("Status", "OK").body(dtoInstrumentNoShops);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

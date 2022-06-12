@@ -1,10 +1,12 @@
 package TP.LAB5.demo.controller;
 
 
+import TP.LAB5.demo.DTO.DTOInstrumentNoShop;
 import TP.LAB5.demo.domain.Instrument;
 import TP.LAB5.demo.services.InstrumentService;
 import TP.LAB5.demo.utils.PostResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,5 +45,33 @@ public class InstrumentController {
         return instrumentService.getInstrumentById(InstrumentId);
     }
 
-
+    //Devuelvo un Response Entity desde el Servicio, pa ver que onda
+    @GetMapping("/a")
+    public ResponseEntity<List<DTOInstrumentNoShop>> getInstrumentByShopId(@RequestParam Integer shopId){
+        return instrumentService.getInstrumentByShopId(shopId);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
