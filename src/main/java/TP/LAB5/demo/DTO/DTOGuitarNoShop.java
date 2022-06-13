@@ -10,11 +10,9 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class DTOEmployeeNoShop {
+public class DTOGuitarNoShop extends DTOInstrumentNoShop{
 
-    private Integer id;
-    private String name;
-    private String lastName;
-    private Integer age;
+    private Integer strNumber;
+    private String type;
 
 }

@@ -1,7 +1,11 @@
 package TP.LAB5.demo.services;
 
+import TP.LAB5.demo.DTO.DTODrumNoShop;
+import TP.LAB5.demo.DTO.DTOGuitarNoShop;
 import TP.LAB5.demo.DTO.DTOInstrumentNoShop;
 import TP.LAB5.demo.domain.Currency;
+import TP.LAB5.demo.domain.Drum;
+import TP.LAB5.demo.domain.Guitar;
 import TP.LAB5.demo.domain.Instrument;
 import TP.LAB5.demo.repository.InstrumentRepository;
 import TP.LAB5.demo.utils.PostResponse;
@@ -78,14 +82,33 @@ public class InstrumentService {
         //paso la lista a una lista de dto para no devolver los shops, tambien asigno pesosPrice
 
         for (Instrument instrument: instrumentList){
-            dtoInstrumentNoShops.add(DTOInstrumentNoShop
+
+            if(instrument.getClass() == Drum.class){
+            dtoInstrumentNoShops.add(DTODrumNoShop
                     .builder()
                     .id(instrument.getId())
                     .isNew(instrument.getIsNew())
                     .brand(instrument.getBrand())
                     .dolarPrice(instrument.getDolarPrice())
                     .pesosPrice(instrument.getDolarPrice() *currency.getSalePrice())
+                    .color(((Drum) instrument).getColor())
+                    .kitNumber(((Drum) instrument).getKitNumber())
                     .build());
+            }
+
+            if(instrument.getClass() == Guitar.class){
+                dtoInstrumentNoShops.add(DTOGuitarNoShop
+                        .builder()
+                        .id(instrument.getId())
+                        .isNew(instrument.getIsNew())
+                        .brand(instrument.getBrand())
+                        .dolarPrice(instrument.getDolarPrice())
+                        .pesosPrice(instrument.getDolarPrice() *currency.getSalePrice())
+                        .strNumber(((Guitar) instrument).getStrNumber())
+                        .type(((Guitar) instrument).getType())
+                        .build());
+            }
+
         }
 
         return ResponseEntity.status(HttpStatus.OK).header("Status", "OK").body(dtoInstrumentNoShops);
