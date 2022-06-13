@@ -6,6 +6,7 @@ import TP.LAB5.demo.domain.Shop;
 import TP.LAB5.demo.services.EmployeeService;
 import TP.LAB5.demo.utils.PostResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,11 @@ public class EmployeeController {
     @GetMapping("/a")
     public List<DTOEmployeeNoShop> getAllByShopId(@RequestParam Integer shopId){
         return employeeService.getAllByShopId(shopId);
+    }
+
+    @GetMapping("/b")
+    public ResponseEntity<Employee> getByNameAndLastName(@RequestParam String name, @RequestParam String lastName){
+        return employeeService.getEmployeeByNameAndLastName(name, lastName);
     }
 
 }

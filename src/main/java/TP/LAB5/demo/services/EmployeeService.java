@@ -9,6 +9,7 @@ import TP.LAB5.demo.utils.PostResponse;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -25,8 +26,22 @@ public class EmployeeService {
     private String path = "employee";
 
 
+    public boolean ValidaEmployeeByNameAndLastName(String name, String lastName){
+        Employee employee =  employeeRepository.findByNameAndLastName(name, lastName);
+        if (employee == null)
+            return true;
+        else
+            return false;
+    }
+
     public PostResponse addEmployee(Employee employee) {
+        //Valido que el empleado no sea cargado dos veces
+        if (!ValidaEmployeeByNameAndLastName(employee.getName(), employee.getLastName()))
+            throw new HttpClientErrorException(HttpStatus.CONFLICT, "Este empleado ya existe");
+
         Employee e = employeeRepository.save(employee);
+
+
 
         return PostResponse.builder()
                 .httpStatus(HttpStatus.CREATED)
@@ -57,5 +72,15 @@ public class EmployeeService {
          }
 
          return dtoEmployeeNoShopList;
+    }
+
+    public ResponseEntity<Employee> getEmployeeByNameAndLastName(String name, String lastName) {
+        Employee employee =  employeeRepository.findByNameAndLastName(name, lastName);
+        if (employee == null)
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "this Employee not exist");
+        else
+            return ResponseEntity.status(HttpStatus.OK).body(employee);
+
+
     }
 }
