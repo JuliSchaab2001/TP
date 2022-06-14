@@ -20,22 +20,22 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     @PostMapping("/")
-    public PostResponse addEmployee(@RequestBody Employee employee){
+    public ResponseEntity addEmployee(@RequestBody Employee employee){
         return employeeService.addEmployee(employee);
     }
 
     @GetMapping("/")
-    public List<Employee> getAll(){
+    public ResponseEntity<List<Employee>> getAll(){
         return employeeService.getAll();
     }
 
     @GetMapping("/{EmployeeId}")
-    public Employee getById(@PathVariable Integer EmployeeId){
+    public ResponseEntity<Employee> getById(@PathVariable Integer EmployeeId){
         return employeeService.getById(EmployeeId);
     }
 
     @GetMapping("/a")
-    public List<DTOEmployeeNoShop> getAllByShopId(@RequestParam Integer shopId){
+    public ResponseEntity<List<DTOEmployeeNoShop>> getAllByShopId(@RequestParam Integer shopId){
         return employeeService.getAllByShopId(shopId);
     }
 

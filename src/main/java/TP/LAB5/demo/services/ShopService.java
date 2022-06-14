@@ -3,8 +3,10 @@ package TP.LAB5.demo.services;
 import TP.LAB5.demo.domain.Shop;
 import TP.LAB5.demo.repository.ShopRepository;
 import TP.LAB5.demo.utils.PostResponse;
+import org.hibernate.cfg.CreateKeySecondPass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -19,20 +21,18 @@ public class ShopService {
     private ShopRepository shopRepository;
 
 
-    public PostResponse addShop(Shop shop) {
+    public ResponseEntity addShop(Shop shop) {
         Shop s = shopRepository.save(shop);
 
-        return PostResponse.builder()
-                .httpStatus(HttpStatus.CREATED)
-                .link(buildURL(path, s.getId().toString()))
-                .build();
+        return  ResponseEntity.status(HttpStatus.CREATED).location(buildURL(path, s.getId().toString())).build();
     }
 
-    public List<Shop> getAll() {
-        return shopRepository.findAll();
+    public ResponseEntity<List<Shop>> getAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(shopRepository.findAll());
     }
 
-    public Shop getById(Integer shopId) {
-        return shopRepository.findById(shopId).orElseThrow(() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "this shop not exist"));
+    public ResponseEntity<Shop> getById(Integer shopId) {
+        Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "this shop not exist"));
+        return ResponseEntity.status(HttpStatus.OK).body(shop);
     }
 }

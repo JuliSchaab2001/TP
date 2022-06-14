@@ -4,6 +4,7 @@ import TP.LAB5.demo.domain.Currency;
 import TP.LAB5.demo.services.CurrencyService;
 import TP.LAB5.demo.services.impl.CurrencyServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +25,7 @@ public class CurrencyController {
 
     //Estas exepciones no las cachea el CustomHandler?
     @GetMapping("/")
-    public Currency getCurrency() throws IOException, InterruptedException {
+    public ResponseEntity<Currency> getCurrency() throws IOException, InterruptedException {
         return currencyService.getCurrency();
     }
 

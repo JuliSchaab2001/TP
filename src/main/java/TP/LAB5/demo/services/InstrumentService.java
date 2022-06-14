@@ -35,39 +35,37 @@ public class InstrumentService {
     @Autowired
     private CurrencyService currencyService;
 
-    public PostResponse addInstrument(Instrument instrument) {
+    public ResponseEntity addInstrument(Instrument instrument) {
 
         //Creo el instrumento y lo guardo en una variable
-        Instrument I = Optional.ofNullable(instrumentRepository.save(instrument)).orElseThrow(() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "TU MAMA"));
+        Instrument I =  instrumentRepository.save(instrument);
 
-        //Retorno un PostResponse y utilizo el instrumento guardado Para crear la url y pasarsela al postResponse
-        return PostResponse.builder()
-                .httpStatus(HttpStatus.CREATED)
-                .link(buildURL(path,I.getId().toString())).build();
+
+        return ResponseEntity.status(HttpStatus.OK).location(buildURL(path,I.getId().toString())).build();
     }
 
-    public List<Instrument> getAll(){
+    public ResponseEntity<List<Instrument>> getAll(){
         try {
-            Currency currency = currencyService.getCurrency();
+            ResponseEntity <Currency> currency = currencyService.getCurrency();
         List<Instrument> instrumentList =  instrumentRepository.findAll();
         for(Instrument instrument: instrumentList){
-            instrument.setPesosPrice(instrument.getDolarPrice() * currency.getSalePrice());
+            instrument.setPesosPrice(instrument.getDolarPrice() * currency.getBody().getSalePrice());
         }
-        return instrumentList;
+        return ResponseEntity.status(HttpStatus.OK).body(instrumentList);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Instrument getInstrumentById(final Integer id)
+    public ResponseEntity<Instrument> getInstrumentById(final Integer id)
     {
     try{
-        Currency currency = currencyService.getCurrency();
+        ResponseEntity <Currency> currency = currencyService.getCurrency();
         Instrument instrument =  instrumentRepository.findById(id).orElseThrow(() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Instrument not exist"));
 
-        instrument.setPesosPrice(instrument.getDolarPrice() * currency.getSalePrice());
+        instrument.setPesosPrice(instrument.getDolarPrice() * currency.getBody().getSalePrice());
 
-        return instrument;
+        return ResponseEntity.status(HttpStatus.OK).body(instrument);
 
     } catch (IOException | InterruptedException e) {
         throw new RuntimeException(e);
@@ -78,7 +76,7 @@ public class InstrumentService {
         try {
         List<DTOInstrumentNoShop> dtoInstrumentNoShops = new ArrayList<DTOInstrumentNoShop>();
         List<Instrument> instrumentList = instrumentRepository.findAllByShopId(shopId);
-            Currency currency = currencyService.getCurrency();
+        ResponseEntity <Currency> currency = currencyService.getCurrency();
         //paso la lista a una lista de dto para no devolver los shops, tambien asigno pesosPrice
 
         for (Instrument instrument: instrumentList){
@@ -90,7 +88,7 @@ public class InstrumentService {
                     .isNew(instrument.getIsNew())
                     .brand(instrument.getBrand())
                     .dolarPrice(instrument.getDolarPrice())
-                    .pesosPrice(instrument.getDolarPrice() *currency.getSalePrice())
+                    .pesosPrice(instrument.getDolarPrice() *currency.getBody().getSalePrice())
                     .color(((Drum) instrument).getColor())
                     .kitNumber(((Drum) instrument).getKitNumber())
                     .build());
@@ -103,7 +101,7 @@ public class InstrumentService {
                         .isNew(instrument.getIsNew())
                         .brand(instrument.getBrand())
                         .dolarPrice(instrument.getDolarPrice())
-                        .pesosPrice(instrument.getDolarPrice() *currency.getSalePrice())
+                        .pesosPrice(instrument.getDolarPrice() *currency.getBody().getSalePrice())
                         .strNumber(((Guitar) instrument).getStrNumber())
                         .type(((Guitar) instrument).getType())
                         .build());

@@ -5,6 +5,7 @@ import TP.LAB5.demo.domain.Shop;
 import TP.LAB5.demo.services.ShopService;
 import TP.LAB5.demo.utils.PostResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,17 +18,17 @@ public class ShopController {
     private ShopService shopService;
 
     @PostMapping("/")
-    public PostResponse addShop(@RequestBody Shop shop){
+    public ResponseEntity addShop(@RequestBody Shop shop){
         return shopService.addShop(shop);
     }
 
     @GetMapping("/")
-    public List<Shop> getAll(){
+    public ResponseEntity<List<Shop>> getAll(){
         return shopService.getAll();
     }
 
     @GetMapping("/{shopId}")
-    public Shop getById(@PathVariable Integer shopId){
+    public ResponseEntity<Shop> getById(@PathVariable Integer shopId){
         return shopService.getById(shopId);
     }
 

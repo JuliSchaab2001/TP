@@ -4,6 +4,8 @@ import TP.LAB5.demo.DTO.CurrencyApiDto;
 import TP.LAB5.demo.domain.Currency;
 import TP.LAB5.demo.services.CurrencyService;
 import TP.LAB5.demo.utils.JsonBodyHandler;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,7 +19,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 
 
     @Override
-    public Currency getCurrency() throws IOException, InterruptedException {
+    public ResponseEntity<Currency> getCurrency() throws IOException, InterruptedException {
         //Creo una request con todo_ lo necesario, methodo, url, credenciales
         // En .method le paso el verbo http y el cuerpo, si el get tiene un cuerpo vacio le aclaro con un .noBody
         HttpRequest request = HttpRequest.newBuilder()
@@ -28,12 +30,13 @@ public class CurrencyServiceImpl implements CurrencyService {
         //Supongo que no lo tengo que mandar credenciales, o aclararle cosas en el header
         //Lleno el dto con el object maper, respeto los nombre del json en el dto, despues lo paso a mi objeto
         HttpResponse<CurrencyApiDto> response = HttpClient.newHttpClient().send(request, new JsonBodyHandler<>(CurrencyApiDto.class));
-        return Currency.builder()
+        return ResponseEntity.status(HttpStatus.OK).body(
+                Currency.builder()
                 .date(response.body().getFecha().substring(0,10))
                 .time(response.body().getFecha().substring(11))
                 .buyPrice(Double.valueOf(response.body().getCompra()))
                 .salePrice(Double.valueOf(response.body().getVenta()))
-                .build();
+                .build());
     }
 
 }

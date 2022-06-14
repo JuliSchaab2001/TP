@@ -23,41 +23,36 @@ public class EmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private ShopService shopService; //Deberia ser Autowired?
     private String path = "employee";
 
 
-    public boolean ValidaEmployeeByNameAndLastName(String name, String lastName){
-        Employee employee =  employeeRepository.findByNameAndLastName(name, lastName);
-        if (employee == null)
-            return true;
-        else
-            return false;
-    }
-
-    public PostResponse addEmployee(Employee employee) {
+    public ResponseEntity addEmployee(Employee employee) {
         //Valido que el empleado no sea cargado dos veces
-        if (!ValidaEmployeeByNameAndLastName(employee.getName(), employee.getLastName()))
+        if (getEmployeeByNameAndLastName(employee.getName(), employee.getLastName()).getBody() != null)
             throw new HttpClientErrorException(HttpStatus.CONFLICT, "Este empleado ya existe");
+        shopService.getById(employee.getShop().getId()); //Si no encuentra el shop se va a romper
 
         Employee e = employeeRepository.save(employee);
-
-
-
-        return PostResponse.builder()
-                .httpStatus(HttpStatus.CREATED)
-                .link(buildURL(path, e.getId().toString()))
-                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).location(buildURL(path, e.getId().toString())).build();
     }
 
-    public List<Employee> getAll() {
-        return employeeRepository.findAll();
+    public ResponseEntity<List<Employee>> getAll() {
+
+        List<Employee> employeeList = employeeRepository.findAll();
+
+        return ResponseEntity.status(HttpStatus.OK).body(employeeList);
     }
 
-    public Employee getById(Integer EmployeeId) {
-        return employeeRepository.findById(EmployeeId).orElseThrow(() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "this Employee not exist"));
+    public ResponseEntity<Employee> getById(Integer employeeId) {
+        Employee employee =  employeeRepository.findById(employeeId).orElseThrow(() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "this Employee not exist"));
+
+        return ResponseEntity.status(HttpStatus.OK).body(employee);
     }
 
-    public List<DTOEmployeeNoShop> getAllByShopId(Integer shopId) {
+    public ResponseEntity<List<DTOEmployeeNoShop>> getAllByShopId(Integer shopId) {
          List<DTOEmployeeNoShop> dtoEmployeeNoShopList = new ArrayList<DTOEmployeeNoShop>();
          List<Employee> employeeList = employeeRepository.findByShopId(shopId);
 
@@ -71,13 +66,13 @@ public class EmployeeService {
                      .build());
          }
 
-         return dtoEmployeeNoShopList;
+         return ResponseEntity.status(HttpStatus.OK).body(dtoEmployeeNoShopList);
     }
 
     public ResponseEntity<Employee> getEmployeeByNameAndLastName(String name, String lastName) {
         Employee employee =  employeeRepository.findByNameAndLastName(name, lastName);
         if (employee == null)
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "this Employee not exist");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         else
             return ResponseEntity.status(HttpStatus.OK).body(employee);
 

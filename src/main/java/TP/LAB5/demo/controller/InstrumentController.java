@@ -26,14 +26,14 @@ public class InstrumentController {
     @PostMapping("/")
     //Le paso el json como parametro @RequestBody
     //ahora devuelvo un PostResponse
-    public PostResponse addInstrument(@RequestBody final Instrument instrument){
+    public ResponseEntity addInstrument(@RequestBody final Instrument instrument){
 
         return instrumentService.addInstrument(instrument);
 
     }
 
     @GetMapping("/")
-    public List<Instrument> getInstruments(){
+    public ResponseEntity<List<Instrument>> getInstruments(){
         return instrumentService.getAll();
     }
 
@@ -41,7 +41,7 @@ public class InstrumentController {
     @GetMapping("/{InstrumentId}")
     //Le digo con @PathVariable que la variable llega por URL
     //REST-> poner final las variables recibidas por parametro
-    public Instrument getInstrumentById(@PathVariable final Integer InstrumentId){
+    public ResponseEntity<Instrument> getInstrumentById(@PathVariable final Integer InstrumentId){
         return instrumentService.getInstrumentById(InstrumentId);
     }
 
